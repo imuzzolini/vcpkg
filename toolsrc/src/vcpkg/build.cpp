@@ -402,6 +402,7 @@ namespace vcpkg::Build
             {"VCPKG_PLATFORM_TOOLSET", toolset.version.c_str()},
             {"VCPKG_USE_HEAD_VERSION", Util::Enum::to_bool(config.build_package_options.use_head_version) ? "1" : "0"},
             {"DOWNLOADS", paths.downloads},
+            {"BUILDTREES_DIR", paths.buildtrees},
             {"_VCPKG_NO_DOWNLOADS", !Util::Enum::to_bool(config.build_package_options.allow_downloads) ? "1" : "0"},
             {"_VCPKG_DOWNLOAD_TOOL", to_string(config.build_package_options.download_tool)},
             {"FEATURES", Strings::join(";", config.feature_list)},
