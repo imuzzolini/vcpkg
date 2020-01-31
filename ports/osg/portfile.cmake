@@ -2,6 +2,9 @@ include(vcpkg_common_functions)
 
 set(OSG_VERSION "3.6.4")
 
+# TODO: create functions "move_items_with_pdb"
+# TODO: create functions to clean empty folders
+
 function(move_items)
     cmake_parse_arguments(move "" "GLOB;FROM;TO" "" ${ARGN})
 
