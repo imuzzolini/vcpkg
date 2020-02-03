@@ -2,27 +2,28 @@ include(vcpkg_common_functions)
 
 set(OSG_VERSION "3.6.4")
 
-# TODO: create functions to clean empty folders
 
 function(move_executables)
     cmake_parse_arguments(move "" "FROM;TO" "" ${ARGN})
 
-    file(MAKE_DIRECTORY ${move_TO})
     file(GLOB ITEMS_TO_MOVE ${move_FROM}/*.exe)
-    foreach(ITEM ${ITEMS_TO_MOVE})
-        get_filename_component(BASENAME ${ITEM} NAME_WLE)
-        get_filename_component(FOLDER ${ITEM} DIRECTORY)
-        set(PDB ${FOLDER}/${BASENAME}.pdb)
-        file(COPY ${ITEM} DESTINATION ${move_TO})
-        if(PDB AND EXISTS ${PDB})
-            file(COPY ${PDB} DESTINATION ${move_TO})
+    list(LENGTH ITEMS_TO_MOVE ITEMS_COUNT)
+    if(${ITEMS_COUNT} GREATER 0)
+        file(MAKE_DIRECTORY ${move_TO})
+        foreach(ITEM ${ITEMS_TO_MOVE})
+            file(COPY ${ITEM} DESTINATION ${move_TO})
+            file(REMOVE ${ITEM})
+        endforeach()
+        file(GLOB REMAINING_ITEMS ${move_FROM}/*.* LIST_DIRECTORIES true)
+        list(LENGTH REMAINING_ITEMS ITEMS_COUNT)
+        if(${ITEMS_COUNT} EQUAL 0)
+            file(REMOVE_RECURSE ${ITEM})
         endif()
-        file(REMOVE_RECURSE ${ITEM})
-        if(PDB AND EXISTS ${PDB})
-            file(REMOVE_RECURSE ${PDB})
-        endif()
-    endforeach()
+    else()
+        message(WARNING "cannot find executables under ${move_FROM}")
+    endif()
 endfunction()
+
 
 vcpkg_check_linkage(ONLY_DYNAMIC_LIBRARY)
 
@@ -66,6 +67,8 @@ if(VCPKG_TARGET_IS_WINDOWS)
             file(RENAME ${CURRENT_PACKAGES_DIR}/debug/include ${CURRENT_PACKAGES_DIR}/include)
         endif()
     endif()
+
+    vcpkg_copy_pdbs()
 endif()
 
 # Handle copyright
