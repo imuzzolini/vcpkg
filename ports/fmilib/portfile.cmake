@@ -13,6 +13,7 @@ vcpkg_extract_source_archive_ex(
     ARCHIVE ${ARCHIVE}
     PATCHES
         0001-remove-install-prefix.patch
+        0002-add-sublibs-install.patch
 )
 
 # Note that if you have configured and built both static and shared library on Windows
@@ -60,6 +61,7 @@ vcpkg_configure_cmake(
         -DFMILIB_BUILD_SHARED_LIB=${FMILIB_BUILD_SHARED_LIB}
         -DFMILIB_BUILDING_LIBRARY=${FMILIB_BUILDING_LIBRARY}
         -DFMILIB_BUILD_WITH_STATIC_RTLIB=${FMILIB_BUILD_WITH_STATIC_RTLIB}
+        -DFMILIB_INSTALL_SUBLIBS=ON
 )
 
 vcpkg_install_cmake()
