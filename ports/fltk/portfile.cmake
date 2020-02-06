@@ -1,8 +1,13 @@
 include(vcpkg_common_functions)
 
+set(FL_VERSION_MAJOR 1)
+set(FL_VERSION_MINOR 3)
+set(FL_VERSION_BUILD 5)
+set(FL_VERSION ${FL_VERSION_MAJOR}.${FL_VERSION_MINOR}.${FL_VERSION_BUILD} )
+
 vcpkg_download_distfile(ARCHIVE
-    URLS "https://fltk.org/pub/fltk/1.3.5/fltk-1.3.5-source.tar.gz"
-    FILENAME "fltk-1.3.5.tar.gz"
+    URLS "https://fltk.org/pub/fltk/${FL_VERSION}/fltk-${FL_VERSION}-source.tar.gz"
+    FILENAME "fltk-${FL_VERSION}.tar.gz"
     SHA512 db7ea7c5f3489195a48216037b9371a50f1119ae7692d66f71b6711e5ccf78814670581bae015e408dee15c4bba921728309372c1cffc90113cdc092e8540821
 )
 
@@ -13,6 +18,8 @@ vcpkg_extract_source_archive_ex(
         findlibsfix.patch
         add-link-libraries.patch
 )
+
+math(EXPR FL_ABI_VERSION "${FL_VERSION_MAJOR}*10000 + ${FL_VERSION_MINOR}*100 + ${FL_VERSION_BUILD}")
 
 if (VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
     set(BUILD_SHARED ON)
@@ -30,6 +37,7 @@ vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
     OPTIONS
+        -DOPTION_ABI_VERSION=${FL_ABI_VERSION}
         -DOPTION_BUILD_EXAMPLES=OFF
         -DOPTION_LARGE_FILE=ON
         -DOPTION_USE_THREADS=ON
