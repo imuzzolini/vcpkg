@@ -1,0 +1,32 @@
+diff --git a/src/osgPlugins/ive/CMakeLists.txt b/src/osgPlugins/ive/CMakeLists.txt
+index 784a79c..e7c78de 100644
+--- a/src/osgPlugins/ive/CMakeLists.txt
++++ b/src/osgPlugins/ive/CMakeLists.txt
+@@ -274,3 +274,5 @@ ENDIF()
+ 
+ #### end var setup  ###
+ SETUP_PLUGIN(ive)
++UNSET (TARGET_TARGETNAME)
++SETUP_PLUGIN(vgf)
+\ No newline at end of file
+diff --git a/src/osgPlugins/ive/ReaderWriterIVE.cpp b/src/osgPlugins/ive/ReaderWriterIVE.cpp
+index af521eb..a3138b7 100644
+--- a/src/osgPlugins/ive/ReaderWriterIVE.cpp
++++ b/src/osgPlugins/ive/ReaderWriterIVE.cpp
+@@ -18,6 +18,7 @@ class ReaderWriterIVE : public ReaderWriter
+         ReaderWriterIVE()
+         {
+             supportsExtension("ive","OpenSceneGraph native binary format");
++            supportsExtension("vgf","VI-grade graphic binary format");
+ 
+             supportsOption("compressed","Export option, use zlib compression to compress the data in the .ive ");
+             supportsOption("noTexturesInIVEFile","Export option");
+@@ -35,7 +36,7 @@ class ReaderWriterIVE : public ReaderWriter
+ 
+         virtual bool acceptsExtension(const std::string& extension) const
+         {
+-            return equalCaseInsensitive(extension,"ive");
++            return equalCaseInsensitive(extension,"ive") || equalCaseInsensitive(extension,"vgf");
+         }
+ 
+         virtual ReadResult readObject(const std::string& file, const Options* options) const

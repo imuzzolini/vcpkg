@@ -14,6 +14,7 @@ vcpkg_from_github(
         disable-present3d-staticview-in-linux.patch #Due to some link error we cannot solve yet, disable them in linux.
         fix-curl.patch
         remove-prefix.patch # Remove this patch when cmake fix Findosg_functions.cmake
+        vigrade-vgf.patch
 )
 
 if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
