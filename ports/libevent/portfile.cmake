@@ -44,14 +44,18 @@ else ()
     vcpkg_fixup_cmake_targets(CONFIG_PATH lib/cmake TARGET_PATH share)
 endif()
 
+file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 file(MAKE_DIRECTORY ${CURRENT_PACKAGES_DIR}/tools/libevent/)
 file(RENAME ${CURRENT_PACKAGES_DIR}/bin/event_rpcgen.py ${CURRENT_PACKAGES_DIR}/tools/libevent/event_rpcgen.py)
-file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
-if (NOT VCPKG_TARGET_IS_WINDOWS)
-    file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
-endif()
+file(REMOVE ${CURRENT_PACKAGES_DIR}/debug/bin/event_rpcgen.py)
+foreach(FOLDER ITEMS ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
+    file(GLOB_RECURSE FILES LIST_DIRECTORIES FALSE ${FOLDER}/*.*)
+    list(LENGTH FILES FILES_COUNT)
+    if(${FILES_COUNT} EQUAL 0)
+        file(REMOVE_RECURSE ${FOLDER})
+    endif()
+endforeach()
 
 vcpkg_copy_pdbs()
 
-#Handle copyright
 file(INSTALL ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
