@@ -45,6 +45,8 @@ if(NOT VCPKG_CMAKE_SYSTEM_NAME)
     endif()
 endif()
 
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
+
 # Handle copyright
 file(COPY ${SOURCE_PATH}/COPYING.txt DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
 file(RENAME ${CURRENT_PACKAGES_DIR}/share/${PORT}/COPYING.txt ${CURRENT_PACKAGES_DIR}/share/${PORT}/copyright)
