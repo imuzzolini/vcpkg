@@ -46,9 +46,8 @@ endif()
 
 file(MAKE_DIRECTORY ${CURRENT_PACKAGES_DIR}/tools/libevent/)
 file(RENAME ${CURRENT_PACKAGES_DIR}/bin/event_rpcgen.py ${CURRENT_PACKAGES_DIR}/tools/libevent/event_rpcgen.py)
-
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
-if(VCPKG_LIBRARY_LINKAGE STREQUAL static)
+if (NOT VCPKG_TARGET_IS_WINDOWS)
     file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
 endif()
 
