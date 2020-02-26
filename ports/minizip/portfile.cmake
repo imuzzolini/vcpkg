@@ -27,7 +27,7 @@ vcpkg_configure_cmake(
             -DDISABLE_INSTALL_TOOLS=ON
 )
 
-vcpkg_install_cmake()
+vcpkg_install_cmake(DISABLE_PARALLEL)
 vcpkg_copy_pdbs()
 vcpkg_fixup_cmake_targets()
 vcpkg_copy_tool_dependencies(${CURRENT_PACKAGES_DIR}/tools/minizip)
