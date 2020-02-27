@@ -23,7 +23,7 @@ else()
     set(OSG_DYNAMIC ON)
 endif()
 
-file(REMOVE ${SOURCE_PATH}/CMakeModules/FindSDL2.cmake)
+# file(REMOVE ${SOURCE_PATH}/CMakeModules/FindSDL2.cmake)
 
 set(OSG_USE_UTF8_FILENAME ON)
 if (NOT VCPKG_TARGET_IS_WINDOWS)
