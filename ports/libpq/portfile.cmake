@@ -241,6 +241,7 @@ else()
     if(NOT "${FEATURES}" MATCHES "readline")
         list(APPEND BUILD_OPTS --without-readline)
     endif()
+    set(ENV{LD_LIBRARY_PATH} ${CURRENT_INSTALLED_DIR}/lib:$ENV{LD_LIBRARY_PATH})
     vcpkg_configure_make(
         SOURCE_PATH ${SOURCE_PATH}
         OPTIONS
