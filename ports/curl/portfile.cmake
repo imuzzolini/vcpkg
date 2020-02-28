@@ -107,3 +107,9 @@ file(WRITE ${CURRENT_PACKAGES_DIR}/include/curl/curl.h "${CURL_H}")
 
 file(INSTALL ${CURRENT_PORT_DIR}/vcpkg-cmake-wrapper.cmake DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
 file(INSTALL ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
+
+vcpkg_remove_if_empty(
+    FOLDERS
+        ${CURRENT_PACKAGES_DIR}/bin 
+        ${CURRENT_PACKAGES_DIR}/debug/bin
+)

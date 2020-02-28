@@ -42,11 +42,8 @@ endif()
 configure_file(${SOURCE_PATH}/COPYING ${CURRENT_PACKAGES_DIR}/share/geos/copyright COPYONLY)
 
 vcpkg_copy_pdbs()
-
-foreach(FOLDER ITEMS ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
-    file(GLOB_RECURSE FILES LIST_DIRECTORIES FALSE ${FOLDER}/*.*)
-    list(LENGTH FILES FILES_COUNT)
-    if(${FILES_COUNT} EQUAL 0)
-        file(REMOVE_RECURSE ${FOLDER})
-    endif()
-endforeach()
+vcpkg_remove_if_empty(
+    FOLDERS
+        ${CURRENT_PACKAGES_DIR}/bin 
+        ${CURRENT_PACKAGES_DIR}/debug/bin
+)

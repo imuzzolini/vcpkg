@@ -106,13 +106,11 @@ foreach(FILE Fl_Export.H fl_utf8.h)
     file(WRITE ${CURRENT_PACKAGES_DIR}/include/FL/${FILE} "${FLTK_HEADER}")
 endforeach()
 
-foreach(FOLDER ITEMS ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
-    file(GLOB_RECURSE FILES LIST_DIRECTORIES FALSE ${FOLDER}/*.*)
-    list(LENGTH FILES FILES_COUNT)
-    if(${FILES_COUNT} EQUAL 0)
-        file(REMOVE_RECURSE ${FOLDER})
-    endif()
-endforeach()
+vcpkg_remove_if_empty(
+    FOLDERS
+        ${CURRENT_PACKAGES_DIR}/bin 
+        ${CURRENT_PACKAGES_DIR}/debug/bin
+)
 
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/share)
 
