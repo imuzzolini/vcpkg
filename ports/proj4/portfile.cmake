@@ -38,9 +38,11 @@ if ("database" IN_LIST FEATURES)
         else()
             message(FATAL_ERROR "Proj4 database need to install sqlite3[tool]:x86-windows first.")
         endif()
+        set(ENV{PATH} ${CURRENT_INSTALLED_DIR}/bin;$ENV{PATH})
     else()
         set(BIN_SUFFIX)
         set(SQLITE3_BIN_PATH ${CURRENT_INSTALLED_DIR}/tools)
+        set(ENV{LD_LIBRARY_PATH} ${CURRENT_INSTALLED_DIR}/lib)
     endif()
 endif()
 
@@ -69,3 +71,4 @@ file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/share)
 
 file(INSTALL ${SOURCE_PATH}/COPYING DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
+
