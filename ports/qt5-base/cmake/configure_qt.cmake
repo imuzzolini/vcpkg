@@ -94,6 +94,14 @@ function(configure_qt)
                 -L ${CURRENT_INSTALLED_DIR}${_path_suffix_${_buildname}}/lib/manual-link
                 -xplatform ${_csc_TARGET_PLATFORM}
             )
+
+        if(VCPKG_TARGET_IS_WINDOWS)
+            set(ENV{PATH} "${CURRENT_INSTALLED_DIR}${_path_suffix_${_buildname}}/bin${VCPKG_HOST_PATH_SEPARATOR}$ENV{PATH}")
+        elseif(VCPKG_TARGET_IS_LINUX)
+            set(ENV{LD_LIBRARY_PATH} "${CURRENT_INSTALLED_DIR}${_path_suffix_${_buildname}}/lib${VCPKG_HOST_PATH_SEPARATOR}$ENV{LD_LIBRARY_PATH}")
+        elseif(VCPKG_TARGET_IS_OSX)
+            set(ENV{DYLD_LIBRARY_PATH} "${CURRENT_INSTALLED_DIR}${_path_suffix_${_buildname}}/lib${VCPKG_HOST_PATH_SEPARATOR}$ENV{DYLD_LIBRARY_PATH}")
+        endif()
         
         if(DEFINED _csc_HOST_TOOLS_ROOT) #use qmake          
             if(WIN32)

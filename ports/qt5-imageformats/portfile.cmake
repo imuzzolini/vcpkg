@@ -28,10 +28,14 @@ find_library(WEBPDEMUX_DEBUG NAMES webpdemuxd webpdemux PATHS "${CURRENT_INSTALL
 find_library(LZMA_RELEASE lzma PATHS "${CURRENT_INSTALLED_DIR}/lib" NO_DEFAULT_PATH)
 find_library(LZMA_DEBUG lzmad lzma PATHS "${CURRENT_INSTALLED_DIR}/debug/lib" NO_DEFAULT_PATH)
 
-set(OPT_REL "TIFF_LIBS=${TIFF_RELEASE} ${LZMA_RELEASE}"
+if(VCPKG_TARGET_IS_LINUX)
+    find_library(PTHREAD pthread)
+endif()
+
+set(OPT_REL "TIFF_LIBS=${TIFF_RELEASE} ${LZMA_RELEASE} ${PTHREAD}"
             "WEBP_LIBS=${WEBP_RELEASE} ${WEBPDEMUX_RELEASE}" 
             "JASPER_LIBS=${JASPER_RELEASE} ${FREEGLUT_RELEASE}") # This will still fail if LIBWEBP is installed with all available features due to the missing additional dependencies
-set(OPT_DBG "TIFF_LIBS=${TIFF_DEBUG} ${LZMA_DEBUG}"
+set(OPT_DBG "TIFF_LIBS=${TIFF_DEBUG} ${LZMA_DEBUG} ${PTHREAD}"
             "WEBP_LIBS=${WEBP_DEBUG} ${WEBPDEMUX_DEBUG}"
             "JASPER_LIBS=${JASPER_DEBUG} ${FREEGLUT_DEBUG}")
 qt_submodule_installation(BUILD_OPTIONS ${CORE_OPTIONS} BUILD_OPTIONS_RELEASE ${OPT_REL} BUILD_OPTIONS_DEBUG ${OPT_DBG})

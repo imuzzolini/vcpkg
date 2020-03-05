@@ -10,11 +10,19 @@ vcpkg_from_github(
         OsgMacroUtils.patch
 )
 
-
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
 )
+
+# The following is needed to let Qt tools (e.g. moc) load the shared libraries on which they depend
+if(VCPKG_TARGET_IS_WINDOWS)
+    set(ENV{PATH} "${CURRENT_INSTALLED_DIR}/bin${VCPKG_HOST_PATH_SEPARATOR}$ENV{PATH}")
+elseif(VCPKG_TARGET_IS_LINUX)
+    set(ENV{LD_LIBRARY_PATH} "${CURRENT_INSTALLED_DIR}/lib${VCPKG_HOST_PATH_SEPARATOR}$ENV{LD_LIBRARY_PATH}")
+elseif(VCPKG_TARGET_IS_OSX)
+    set(ENV{DYLD_LIBRARY_PATH} "${CURRENT_INSTALLED_DIR}/lib${VCPKG_HOST_PATH_SEPARATOR}$ENV{DYLD_LIBRARY_PATH}")
+endif()
 
 vcpkg_install_cmake()
 
