@@ -17,7 +17,6 @@ vcpkg_extract_source_archive_ex(
     PATCHES
         findlibsfix.patch
         add-link-libraries.patch
-        fix-dll-names.patch
 )
 
 math(EXPR FL_ABI_VERSION "${FL_VERSION_MAJOR}*10000 + ${FL_VERSION_MINOR}*100 + ${FL_VERSION_BUILD}")
@@ -77,24 +76,14 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL static)
         ${CURRENT_PACKAGES_DIR}/bin
     )
 else()
-    # if(VCPKG_TARGET_IS_WINDOWS)
-    #     file(GLOB SHARED_LIBS "${CURRENT_PACKAGES_DIR}/lib/*_SHARED.lib" "${CURRENT_PACKAGES_DIR}/debug/lib/*_SHAREDd.lib")
-    #     file(GLOB STATIC_LIBS "${CURRENT_PACKAGES_DIR}/lib/*.lib" "${CURRENT_PACKAGES_DIR}/debug/lib/*.lib")
-    #     list(FILTER STATIC_LIBS EXCLUDE REGEX "_SHAREDd?\\.lib\$")
-    #     file(REMOVE ${STATIC_LIBS})
-    #     foreach(SHARED_LIB ${SHARED_LIBS})
-    #         string(REGEX REPLACE "_SHARED(d?)\\.lib\$" "\\1.lib" NEWNAME ${SHARED_LIB})
-    #         file(RENAME ${SHARED_LIB} ${NEWNAME})
-    #     endforeach()
-    # else()
-    #     file(GLOB SHARED_LIBS "${CURRENT_PACKAGES_DIR}/lib/*_SHARED.so*" "${CURRENT_PACKAGES_DIR}/debug/lib/*_SHARED.so*")
-    #     file(GLOB STATIC_LIBS "${CURRENT_PACKAGES_DIR}/lib/*.a" "${CURRENT_PACKAGES_DIR}/debug/lib/*.a")
-    #     file(REMOVE ${STATIC_LIBS})
-    #     foreach(SHARED_LIB ${SHARED_LIBS})
-    #         string(REGEX REPLACE "_SHARED" "" NEWNAME ${SHARED_LIB})
-    #         file(RENAME ${SHARED_LIB} ${NEWNAME})
-    #     endforeach()
-    # endif()
+    if(VCPKG_TARGET_IS_WINDOWS)
+        file(GLOB STATIC_LIBS "${CURRENT_PACKAGES_DIR}/lib/*.lib" "${CURRENT_PACKAGES_DIR}/debug/lib/*.lib")
+        list(FILTER STATIC_LIBS EXCLUDE REGEX "_SHAREDd?\\.lib\$")
+        file(REMOVE ${STATIC_LIBS})
+    else()
+        file(GLOB STATIC_LIBS "${CURRENT_PACKAGES_DIR}/lib/*.a" "${CURRENT_PACKAGES_DIR}/debug/lib/*.a")
+        file(REMOVE ${STATIC_LIBS})
+    endif()
 endif()
 
 if(VCPKG_TARGET_IS_WINDOWS)
