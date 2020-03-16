@@ -8,6 +8,7 @@ vcpkg_from_github(
     HEAD_REF master
 	PATCHES
         OsgMacroUtils.patch
+        remove-64-suffix-from-lib-folder.patch
 )
 
 vcpkg_configure_cmake(
