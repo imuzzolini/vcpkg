@@ -64,7 +64,6 @@ set(ENV{_CL_} "/utf-8")
 
 set(CORE_OPTIONS
     -confirm-license
-    -opensource
     #-simulator_and_device
     #-ltcg
     #-combined-angle-lib 
@@ -73,6 +72,12 @@ set(CORE_OPTIONS
     #-force-debug-info
     -verbose
 )
+
+if((EXISTS $ENV{HOME}/.qt-license) OR ((VCPKG_TARGET_IS_WINDOWS) AND (EXISTS $ENV{USERPROFILE}/.qt-license)))
+    list(APPEND CORE_OPTIONS -commercial)
+else()
+    list(APPEND CORE_OPTIONS -opensource)
+endif()
 
 ## 3rd Party Libs
 list(APPEND CORE_OPTIONS
