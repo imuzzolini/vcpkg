@@ -71,16 +71,6 @@ file(REMOVE_RECURSE
     ${CURRENT_PACKAGES_DIR}/debug/share
 )
 
-if(VCPKG_TARGET_IS_WINDOWS)
-    set(EXE_SUFFIX ".exe")
-endif()
-
-file(MAKE_DIRECTORY ${CURRENT_PACKAGES_DIR}/tools)
-file(RENAME ${CURRENT_PACKAGES_DIR}/bin/fluid${EXE_SUFFIX} ${CURRENT_PACKAGES_DIR}/tools/fluid${EXE_SUFFIX})
-file(RENAME ${CURRENT_PACKAGES_DIR}/bin/fltk-config ${CURRENT_PACKAGES_DIR}/tools/fltk-config)
-file(REMOVE ${CURRENT_PACKAGES_DIR}/debug/bin/fluid${EXE_SUFFIX})
-file(REMOVE ${CURRENT_PACKAGES_DIR}/debug/bin/fltk-config)
-
 vcpkg_copy_pdbs()
 
 vcpkg_copy_tool_dependencies(${CURRENT_PACKAGES_DIR}/tools/fltk)
