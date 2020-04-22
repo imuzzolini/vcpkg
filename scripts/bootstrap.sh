@@ -241,7 +241,9 @@ buildDir="$srcDir/build.rel"
 rm -rf "$buildDir"
 mkdir -p "$buildDir"
 
-("$cmakeExe" -B "$buildDir" -S "$srcDir" -DCMAKE_BUILD_TYPE=Release -G "Ninja" "-DCMAKE_MAKE_PROGRAM=$ninjaExe" "-DBUILD_TESTING=OFF" "-DVCPKG_DEVELOPMENT_WARNINGS=OFF" "-DVCPKG_WARNINGS_AS_ERRORS=OFF" "-DVCPKG_DISABLE_METRICS=$vcpkgDisableMetrics" "-DVCPKG_ALLOW_APPLE_CLANG=$vcpkgAllowAppleClang") || exit 1
+# TODO: had to add "-DVCPKG_USE_STD_FILESYSTEM=ON" in order to build with gcc9 (otherwise C++ filesystem library where not linking correctly)
+
+("$cmakeExe" -B "$buildDir" -S "$srcDir" -DCMAKE_BUILD_TYPE=Release -G "Ninja" "-DVCPKG_USE_STD_FILESYSTEM=ON" "-DCMAKE_MAKE_PROGRAM=$ninjaExe" "-DBUILD_TESTING=OFF" "-DVCPKG_DEVELOPMENT_WARNINGS=OFF" "-DVCPKG_WARNINGS_AS_ERRORS=OFF" "-DVCPKG_DISABLE_METRICS=$vcpkgDisableMetrics" "-DVCPKG_ALLOW_APPLE_CLANG=$vcpkgAllowAppleClang") || exit 1
 ("$cmakeExe" --build "$buildDir") || exit 1
 
 rm -rf "$vcpkgRootDir/vcpkg"
