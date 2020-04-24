@@ -31,7 +31,7 @@ find_library(LZMA_RELEASE lzma PATHS "${CURRENT_INSTALLED_DIR}/lib" NO_DEFAULT_P
 find_library(LZMA_DEBUG lzmad lzma PATHS "${CURRENT_INSTALLED_DIR}/debug/lib" NO_DEFAULT_PATH)
 
 if(VCPKG_TARGET_IS_LINUX)
-    find_library(PTHREAD pthread)
+    find_library(PTHREAD pthread PATHS /usr/lib /usr/lib64 /lib /lib64)
 endif()
 
 set(OPT_REL "TIFF_LIBS=${TIFF_RELEASE} ${LZMA_RELEASE} ${PTHREAD}"
