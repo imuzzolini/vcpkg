@@ -15,6 +15,7 @@ vcpkg_extract_source_archive_ex(
         0001-remove-install-prefix.patch
         0002-add-sublibs-install.patch
         0003-fix-miniunz.patch
+        0004-fix-unix-build.patch
 )
 
 # Note that if you have configured and built both static and shared library on Windows
