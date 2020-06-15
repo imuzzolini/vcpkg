@@ -33,6 +33,10 @@ else()
     set(OPTION_USE_GL "-DOPTION_USE_GL=ON")
 endif()
 
+if (VCPKG_TARGET_IS_LINUX)
+    set(OPTION_X11 "-DOPTION_USE_XINERAMA=ON -DOPTION_USE_XFT=ON -DOPTION_USE_XDBE=ON -DOPTION_USE_XCURSOR=ON -DOPTION_USE_XRENDER=ON -DOPTION_USE_XFIXES=ON")
+endif()
+
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
@@ -46,6 +50,7 @@ vcpkg_configure_cmake(
         -DOPTION_USE_SYSTEM_LIBJPEG=ON
         -DOPTION_BUILD_SHARED_LIBS=${BUILD_SHARED}
         ${OPTION_USE_GL}
+        ${OPTION_X11}
 )
 
 vcpkg_install_cmake()
