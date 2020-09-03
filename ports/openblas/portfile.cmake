@@ -23,7 +23,7 @@ vcpkg_find_acquire_program(PERL)
 get_filename_component(PERL_EXE_PATH ${PERL} DIRECTORY)
 set(ENV{PATH} "$ENV{PATH};${PERL_EXE_PATH};${SED_EXE_PATH}")
 
-set(COMMON_OPTIONS -DBUILD_WITHOUT_LAPACK=ON)
+set(COMMON_OPTIONS -DBUILD_WITHOUT_LAPACK=ON -DDYNAMIC_ARCH=TRUE)
 
 # for UWP version, must build non uwp first for helper
 # binaries.
