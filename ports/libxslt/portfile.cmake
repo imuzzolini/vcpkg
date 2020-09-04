@@ -9,6 +9,7 @@ vcpkg_from_github(
     PATCHES
         0001-Fix-makefile.patch
         0002-Fix-lzma.patch
+        0003-Fix-pkgconfig.patch
 )
 
 if (VCPKG_TARGET_IS_WINDOWS)
@@ -77,9 +78,6 @@ if (VCPKG_TARGET_IS_WINDOWS)
         file(RENAME ${CURRENT_PACKAGES_DIR}/debug/lib/libexslt_a${VCPKG_TARGET_STATIC_LIBRARY_SUFFIX} ${CURRENT_PACKAGES_DIR}/debug/lib/libexslt${VCPKG_TARGET_STATIC_LIBRARY_SUFFIX})
     endif()
 else()
-    vcpkg_find_acquire_program(PYTHON2)
-    get_filename_component(PYTHON2_DIR ${PYTHON2} DIRECTORY)
-    
     find_library(LibXml2_DEBUG_LIBRARIES libxml2 PATHS ${CURRENT_INSTALLED_DIR}/debug/lib REQUIRED)
     find_library(LibXml2_RELEASE_LIBRARIES libxml2 PATHS ${CURRENT_INSTALLED_DIR}/lib REQUIRED)
     
@@ -90,16 +88,16 @@ else()
             --with-crypto
             --with-plugins
             --with-libxml-include-prefix=${CURRENT_INSTALLED_DIR}/include
-            --with-python=${PYTHON2_DIR}
+            --with-python=no
         OPTIONS_DEBUG
             --with-mem-debug
             --with-debug
             --with-debugger
-            --with-libxml-libs-prefix="${CURRENT_INSTALLED_DIR}/debug/lib -lxml2 -lz -llzmad"
+            --with-libxml-libs-prefix="${CURRENT_INSTALLED_DIR}/debug/lib -lxml2 -lz -llzmad -ldl"
             --with-html-dir=${CURRENT_INSTALLED_DIR}/debug/tools
             --with-html-subdir=${CURRENT_INSTALLED_DIR}/debug/tools
         OPTIONS_RELEASE
-            --with-libxml-libs-prefix="${CURRENT_INSTALLED_DIR}/lib -lxml2 -lz -llzma"
+            --with-libxml-libs-prefix="${CURRENT_INSTALLED_DIR}/lib -lxml2 -lz -llzma -ldl"
             --with-html-dir=${CURRENT_INSTALLED_DIR}/tools
             --with-html-subdir=${CURRENT_INSTALLED_DIR}/tools
     )
@@ -114,13 +112,8 @@ else()
         file(COPY ${CURRENT_PACKAGES_DIR}/bin/xsltproc DESTINATION ${CURRENT_PACKAGES_DIR}/tools)
         file(REMOVE ${CURRENT_PACKAGES_DIR}/bin/xslt-config)
     endif()
-    if (VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
-        file(COPY ${CURRENT_PACKAGES_DIR}/lib/libxslt.so ${CURRENT_PACKAGES_DIR}/bin/)
-    else()
-        file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
-        file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/lib/libxslt-plugins ${CURRENT_PACKAGES_DIR}/debug/lib/libxslt-plugins)
-    endif()
-    file(REMOVE ${CURRENT_PACKAGES_DIR}/lib/libxslt.so)
+    file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
+    file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/lib/libxslt-plugins ${CURRENT_PACKAGES_DIR}/debug/lib/libxslt-plugins)
 endif()
 #
 # Cleanup
@@ -143,8 +136,7 @@ else()
 endif()
 file(WRITE ${CURRENT_PACKAGES_DIR}/include/libexslt/exsltexports.h "${EXSLTEXPORTS_H}")
 
-# Remove tools and debug include directories
-file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/tools)
+# Remove not needed debug directories
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/tools)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/share)

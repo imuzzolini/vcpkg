@@ -1,0 +1,23 @@
+diff --git a/configure.ac b/configure.ac
+index 37b18c3..66a7518 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -495,12 +495,12 @@ dnl
+ dnl Try pkg-config first if nothing is set
+ dnl
+ 
+-if test "x$LIBXML_CONFIG_PREFIX" = "x" -a "x$LIBXML_LIBS" = "x"
+-then
+-	PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= $LIBXML_REQUIRED_VERSION], [
+-		WITH_MODULES="`$PKG_CONFIG --variable=modules libxml-2.0`"
+-	], [ ])
+-fi
++# if test "x$LIBXML_CONFIG_PREFIX" = "x" -a "x$LIBXML_LIBS" = "x"
++# then
++# 	PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= $LIBXML_REQUIRED_VERSION], [
++# 		WITH_MODULES="`$PKG_CONFIG --variable=modules libxml-2.0`"
++# 	], [ ])
++# fi
+ 
+ dnl
+ dnl make sure xml2-config is executable,
