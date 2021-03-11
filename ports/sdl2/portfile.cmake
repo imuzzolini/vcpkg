@@ -1,16 +1,17 @@
-vcpkg_from_github(
+set(SDL2_VERSION 2.0.14)
+vcpkg_download_distfile(ARCHIVE
+    URLS "https://www.libsdl.org/release/SDL2-${SDL2_VERSION}.tar.gz"
+    FILENAME "SDL2-${SDL2_VERSION}.tar.gz"
+    SHA512 ebc482585bd565bf3003fbcedd91058b2183e333b9ea566d2f386da0298ff970645d9d25c1aa4459c7c96e9ea839fd1c5f2da0242a56892865b2e456cdd027ee
+)
+
+vcpkg_extract_source_archive_ex(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO SDL-Mirror/SDL
-    REF release-2.0.10
-    SHA512 c5fe59eed7ba9c6a82cceaf513623480793727fceec84b01d819e7cbefc8229a84be93067d7539f12d5811c49d3d54fd407272786aef3e419f439d0105c34b21
-    HEAD_REF master
+    ARCHIVE ${ARCHIVE}
     PATCHES
-        export-symbols-only-in-shared-build.patch
-        fix-cmake-include-dir.patch
-        enable-winrt-cmake.patch
-        fix-arm64-headers.patch
-        disable-hidapi-for-uwp.patch
-        fix-space-in-path.patch
+        0001-sdl2-Enable-creation-of-pkg-cfg-file-on-windows.patch
+        0002-sdl2-skip-ibus-on-linux.patch
+        0003-sdl2-fix-uwp-build.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" SDL_STATIC)
@@ -70,12 +71,24 @@ if(NOT VCPKG_CMAKE_SYSTEM_NAME)
 
     file(GLOB SHARE_FILES ${CURRENT_PACKAGES_DIR}/share/sdl2/*.cmake)
     foreach(SHARE_FILE ${SHARE_FILES})
-        file(READ "${SHARE_FILE}" _contents)
-        string(REPLACE "lib/SDL2main" "lib/manual-link/SDL2main" _contents "${_contents}")
-        file(WRITE "${SHARE_FILE}" "${_contents}")
+        vcpkg_replace_string("${SHARE_FILE}" "lib/SDL2main" "lib/manual-link/SDL2main")
     endforeach()
 endif()
 
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/vcpkg-cmake-wrapper.cmake DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
 configure_file(${SOURCE_PATH}/COPYING.txt ${CURRENT_PACKAGES_DIR}/share/${PORT}/copyright COPYONLY)
 vcpkg_copy_pdbs()
+
+set(DYLIB_COMPATIBILITY_VERSION_REGEX "set\\(DYLIB_COMPATIBILITY_VERSION (.+)\\)")
+set(DYLIB_CURRENT_VERSION_REGEX "set\\(DYLIB_CURRENT_VERSION (.+)\\)")
+file(STRINGS "${SOURCE_PATH}/CMakeLists.txt" DYLIB_COMPATIBILITY_VERSION REGEX ${DYLIB_COMPATIBILITY_VERSION_REGEX})
+file(STRINGS "${SOURCE_PATH}/CMakeLists.txt" DYLIB_CURRENT_VERSION REGEX ${DYLIB_CURRENT_VERSION_REGEX})
+string(REGEX REPLACE ${DYLIB_COMPATIBILITY_VERSION_REGEX} "\\1" DYLIB_COMPATIBILITY_VERSION "${DYLIB_COMPATIBILITY_VERSION}")
+string(REGEX REPLACE ${DYLIB_CURRENT_VERSION_REGEX} "\\1" DYLIB_CURRENT_VERSION "${DYLIB_CURRENT_VERSION}")
+
+if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "debug")
+    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/debug/lib/pkgconfig/sdl2.pc" "-lSDL2main" "-lSDL2maind")
+    vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/debug/lib/pkgconfig/sdl2.pc" "-lSDL2 " "-lSDL2d ")
+endif()
+
+vcpkg_fixup_pkgconfig()

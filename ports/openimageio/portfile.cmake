@@ -1,14 +1,20 @@
+if("field3d" IN_LIST FEATURES)
+    vcpkg_fail_port_install(
+        ON_TARGET WINDOWS UWP
+        MESSAGE "The field3d feature is not supported on Windows"
+    )
+endif()
+
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO OpenImageIO/oiio
-    REF fdd982a9922ff508b8b22e5d024356b582572f46 #2.1.9.0
-    SHA512 1d076cb035b1b2cb603343465ed810ca47223211870d58f48c177d40d71a9cf82e53548b0c70127daf5dbd06f1b24772919e49e55110d914a542bcb62b99f6e8
+    REF 5167b11277fffcd9fe18fe4dc35b3eb2669d8c44 # 2.2.10
+    SHA512 d5812cf93bbaf8a384e8ee9f443db95a92320b4c35959a528dff40eac405355d1dec924a975bef7f367d3a2179ded0a15b4be9737d37521719739958bb7f3123
     HEAD_REF master
     PATCHES
+        fix-config-cmake.patch
         fix-dependency.patch
         fix_static_build.patch
-        fix-tools-path.patch
-        fix-config-cmake.patch
 )
 
 file(REMOVE_RECURSE "${SOURCE_PATH}/ext")
@@ -56,8 +62,10 @@ vcpkg_configure_cmake(
         -DUSE_QT=OFF
         -DUSE_PTEX=OFF
         -DLINKSTATIC=${LINKSTATIC}
-        -DBUILD_MISSING_PYBIND11=OFF
+        -DBUILD_MISSING_FMT=OFF
+        -DBUILD_MISSING_ROBINMAP=OFF
         -DBUILD_MISSING_DEPS=OFF
+        -DSTOP_ON_WARNING=OFF
         -DVERBOSE=ON
 )
 
@@ -65,10 +73,13 @@ vcpkg_install_cmake()
 
 vcpkg_copy_pdbs()
 
-vcpkg_fixup_cmake_targets(CONFIG_PATH lib/cmake/OpenImageIO)
+vcpkg_fixup_cmake_targets(CONFIG_PATH lib/cmake/OpenImageIO TARGET_PATH share/OpenImageIO)
 
-if ("tools" IN_LIST FEATURES)
-    vcpkg_copy_tool_dependencies(${CURRENT_PACKAGES_DIR}/tools/openimageio)
+if("tools" IN_LIST FEATURES)
+    vcpkg_copy_tools(
+        TOOL_NAMES iconvert idiff igrep iinfo maketx oiiotool
+        AUTO_CLEAN
+    )
 endif()
 
 # Clean
@@ -77,8 +88,8 @@ file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/doc
                     ${CURRENT_PACKAGES_DIR}/debug/include
                     ${CURRENT_PACKAGES_DIR}/debug/share)
 
-file(COPY ${SOURCE_PATH}/src/cmake/modules/FindOpenImageIO.cmake DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
-file(COPY ${CMAKE_CURRENT_LIST_DIR}/vcpkg-cmake-wrapper.cmake DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT})
+file(COPY ${SOURCE_PATH}/src/cmake/modules/FindOpenImageIO.cmake DESTINATION ${CURRENT_PACKAGES_DIR}/share/OpenImageIO)
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/vcpkg-cmake-wrapper.cmake DESTINATION ${CURRENT_PACKAGES_DIR}/share/OpenImageIO)
 
 # Handle copyright
 file(INSTALL ${SOURCE_PATH}/LICENSE.md DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)

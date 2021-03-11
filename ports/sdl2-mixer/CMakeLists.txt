@@ -91,7 +91,7 @@ add_library(SDL2_mixer
     music_wav.c
     version.rc)
 
-if(WIN32 OR APPLE)
+if((WIN32 OR APPLE) AND SDL_MIXER_ENABLE_NATIVEMIDI)
     list(APPEND SDL_MIXER_DEFINES MUSIC_MID_NATIVE)
     target_sources(SDL2_mixer PRIVATE music_nativemidi.c native_midi/native_midi_common.c)
     target_link_libraries(SDL2_mixer ${SDL_MIXER_LIBRARIES})
@@ -103,7 +103,7 @@ if(WIN32 OR APPLE)
     endif()
 endif()
 
-set_target_properties(SDL2_mixer PROPERTIES DEFINE_SYMBOL SDL2_EXPORTS)
+set_target_properties(SDL2_mixer PROPERTIES DEFINE_SYMBOL DLL_EXPORT)
 target_compile_definitions(SDL2_mixer PRIVATE ${SDL_MIXER_DEFINES} ${SDL_MIXER_LOAD_DEFINES})
 target_include_directories(SDL2_mixer PRIVATE ${SDL_MIXER_INCLUDES} ./native_midi)
 

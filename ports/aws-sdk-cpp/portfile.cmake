@@ -3,9 +3,12 @@ vcpkg_buildpath_length_warning(37)
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO aws/aws-sdk-cpp
-    REF ad6c51d8c9e52eb74418d40b0a78021e890ef27f # 1.7.270
-    SHA512 a636c60bc07a58860dfd53a786edbc47b7974084c5b65dd1fca663f9521a92871e4830c71880498583e6e372ee141a6550cd88fd9649ab1017dd712e4c8ccb23
+    REF b11ed430fa6a574cc842532192dfeb9bb09e62b4 # 1.8.126
+    SHA512 39e71f85d977b183df6f0d6d61a028db33573026f6abb8856f35e0e71398e2749db6dbdd033818a2c045ec42076fb23cdbae92608117db0a08ca88a05c825683
     HEAD_REF master
+    PATCHES
+        patch-relocatable-rpath.patch
+        fix-AWSSDKCONFIG.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_CRT_LINKAGE}" "dynamic" FORCE_SHARED_CRT)
@@ -14,8 +17,11 @@ set(BUILD_ONLY core)
 
 include(${CMAKE_CURRENT_LIST_DIR}/compute_build_only.cmake)
 
-string(REPLACE ";" "\\\\\\\\\\\;" BUILD_ONLY "${BUILD_ONLY}")
-
+if(VCPKG_TARGET_IS_OSX OR VCPKG_TARGET_IS_IOS)
+    set(rpath "@loader_path")
+else()
+    set(rpath "\$ORIGIN")
+endif()
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     DISABLE_PARALLEL_CONFIGURE
@@ -27,6 +33,7 @@ vcpkg_configure_cmake(
         -DCMAKE_DISABLE_FIND_PACKAGE_Git=TRUE
         "-DBUILD_ONLY=${BUILD_ONLY}"
         -DBUILD_DEPS=OFF
+        -DCMAKE_INSTALL_RPATH=${rpath}
 )
 
 vcpkg_install_cmake()
@@ -55,7 +62,6 @@ endforeach()
 file(REMOVE_RECURSE
     ${CURRENT_PACKAGES_DIR}/debug/include
     ${CURRENT_PACKAGES_DIR}/debug/share
-    ${CURRENT_PACKAGES_DIR}/share/AWSSDK
     ${CURRENT_PACKAGES_DIR}/lib/pkgconfig
     ${CURRENT_PACKAGES_DIR}/debug/lib/pkgconfig
     ${CURRENT_PACKAGES_DIR}/nuget
@@ -76,6 +82,8 @@ if(VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
 
     file(APPEND ${CURRENT_PACKAGES_DIR}/include/aws/core/SDKConfig.h "#ifndef USE_IMPORT_EXPORT\n#define USE_IMPORT_EXPORT\n#endif")
 endif()
+
+configure_file(${CURRENT_PORT_DIR}/usage ${CURRENT_PACKAGES_DIR}/share/${PORT}/usage @ONLY)
 
 # Handle copyright
 file(INSTALL ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
