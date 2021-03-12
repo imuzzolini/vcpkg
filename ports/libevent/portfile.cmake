@@ -49,12 +49,6 @@ file(MAKE_DIRECTORY ${CURRENT_PACKAGES_DIR}/tools/libevent/)
 file(RENAME ${CURRENT_PACKAGES_DIR}/bin/event_rpcgen.py ${CURRENT_PACKAGES_DIR}/tools/libevent/event_rpcgen.py)
 file(REMOVE ${CURRENT_PACKAGES_DIR}/debug/bin/event_rpcgen.py)
 
-
-vcpkg_remove_if_empty(
-    FOLDERS
-        ${CURRENT_PACKAGES_DIR}/bin 
-        ${CURRENT_PACKAGES_DIR}/debug/bin
-)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/share)
 if(VCPKG_LIBRARY_LINKAGE STREQUAL static)

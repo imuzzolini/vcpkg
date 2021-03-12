@@ -50,8 +50,3 @@ endif()
 configure_file(${SOURCE_PATH}/COPYING ${CURRENT_PACKAGES_DIR}/share/geos/copyright COPYONLY)
 
 vcpkg_copy_pdbs()
-vcpkg_remove_if_empty(
-    FOLDERS
-        ${CURRENT_PACKAGES_DIR}/bin 
-        ${CURRENT_PACKAGES_DIR}/debug/bin
-)
