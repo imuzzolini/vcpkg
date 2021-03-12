@@ -44,10 +44,8 @@ vcpkg_install_cmake()
 
 vcpkg_fixup_cmake_targets(CONFIG_PATH lib/cmake TARGET_PATH share)
 
-file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 file(MAKE_DIRECTORY ${CURRENT_PACKAGES_DIR}/tools/libevent/)
 file(RENAME ${CURRENT_PACKAGES_DIR}/bin/event_rpcgen.py ${CURRENT_PACKAGES_DIR}/tools/libevent/event_rpcgen.py)
-file(REMOVE ${CURRENT_PACKAGES_DIR}/debug/bin/event_rpcgen.py)
 
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/share)
@@ -68,4 +66,5 @@ vcpkg_replace_string(${CURRENT_PACKAGES_DIR}/share/libevent/LibeventTargets-${_t
 
 vcpkg_copy_pdbs()
 
+#Handle copyright
 file(INSTALL ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
