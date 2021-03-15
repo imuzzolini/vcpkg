@@ -4,6 +4,41 @@
 # From https://github.com/apache/thrift/blob/master/CHANGES.md
 vcpkg_check_linkage(ONLY_STATIC_LIBRARY)
 
+# VI-grade additions for:
+#  - VI-GraphSim application based on Unity
+#  - VI-SimController application based on Python
+
+# VI-grade addition to install .NET runtime
+function(build_thrift_dotnet_runtime)
+    cmake_parse_arguments(build_thrift_dotnet_runtime "" "CONFIGURATION;WORKING_DIRECTORY;LOGNAME" "" ${ARGN})
+
+    file(TO_NATIVE_PATH "${build_thrift_dotnet_runtime_WORKING_DIRECTORY}/net/msbuild.txt" MSBUILD_INPUT)
+    file(TO_NATIVE_PATH "${build_thrift_dotnet_runtime_WORKING_DIRECTORY}/net/out" MSBUILD_OUTDIR)
+    file(TO_NATIVE_PATH "${build_thrift_dotnet_runtime_WORKING_DIRECTORY}/net/obj" MSBUILD_OBJDIR)
+    file(TO_NATIVE_PATH "${SOURCE_PATH}/lib/csharp/src/Thrift.csproj" MSBUILD_PROJECT)
+
+    file(WRITE "${MSBUILD_INPUT}" "${MSBUILD_PROJECT} ")
+    file(APPEND "${MSBUILD_INPUT}" "/t:Build ")
+    file(APPEND "${MSBUILD_INPUT}" "/p:Configuration=${build_thrift_dotnet_runtime_CONFIGURATION} ")
+    file(APPEND "${MSBUILD_INPUT}" "/p:Platform=AnyCPU ")
+    file(APPEND "${MSBUILD_INPUT}" "/p:OutDir=${MSBUILD_OUTDIR}\\ ")
+    file(APPEND "${MSBUILD_INPUT}" "/p:IntermediateOutputPath=${MSBUILD_OBJDIR}\\ ")
+
+    vcpkg_execute_required_process(
+        COMMAND msbuild @${MSBUILD_INPUT}
+        WORKING_DIRECTORY ${build_thrift_dotnet_runtime_WORKING_DIRECTORY}
+        LOGNAME ${build_thrift_dotnet_runtime_LOGNAME}
+    )
+
+    file(INSTALL ${MSBUILD_OUTDIR}/Thrift.dll DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT}/dotnet/${build_thrift_dotnet_runtime_CONFIGURATION})
+    file(INSTALL ${MSBUILD_OUTDIR}/Thrift.pdb DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT}/dotnet/${build_thrift_dotnet_runtime_CONFIGURATION})
+endfunction()
+
+# VI-grade addition to install Python runtime
+vcpkg_find_acquire_program(PYTHON2)
+get_filename_component(PYTHON2_DIR "${PYTHON2}" DIRECTORY)
+vcpkg_add_to_path(${PYTHON2_DIR})
+
 vcpkg_find_acquire_program(FLEX)
 vcpkg_find_acquire_program(BISON)
 
@@ -35,13 +70,14 @@ vcpkg_configure_cmake(
         -DBUILD_TESTING=off
         -DBUILD_JAVA=off
         -DBUILD_C_GLIB=off
-        -DBUILD_PYTHON=off
+        -DBUILD_PYTHON=on
         -DBUILD_CPP=on
         -DBUILD_HASKELL=off
         -DBUILD_TUTORIALS=off
         -DFLEX_EXECUTABLE=${FLEX}
         -DCMAKE_DISABLE_FIND_PACKAGE_Qt5=TRUE
         -DBISON_EXECUTABLE=${BISON}
+        -DPYTHON_EXECUTABLE=${PYTHON2}
 )
 
 vcpkg_install_cmake()
@@ -69,5 +105,28 @@ if ("${VCPKG_LIBRARY_LINKAGE}" STREQUAL "static")
     file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/bin)
     file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin)
 endif()
+
+# VI-grade addition to install .NET runtime
+if(VCPKG_TARGET_IS_WINDOWS)
+    if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "release")
+        build_thrift_dotnet_runtime(
+            CONFIGURATION Release
+            WORKING_DIRECTORY ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel
+            LOGNAME build-${TARGET_TRIPLET}-rel
+        )
+    endif()
+
+    if(NOT DEFINED VCPKG_BUILD_TYPE OR VCPKG_BUILD_TYPE STREQUAL "debug")
+        build_thrift_dotnet_runtime(
+            CONFIGURATION Debug
+            WORKING_DIRECTORY ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg
+            LOGNAME build-${TARGET_TRIPLET}-dbg
+        )
+    endif()
+endif()
+
+# VI-grade addition to install Python runtime
+file(MAKE_DIRECTORY ${CURRENT_PACKAGES_DIR}/share/${PORT}/python)
+file(RENAME ${SOURCE_PATH}/lib/py/build/lib/thrift ${CURRENT_PACKAGES_DIR}/share/${PORT}/python/thrift)
 
 file(INSTALL ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
