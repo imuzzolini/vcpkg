@@ -127,6 +127,6 @@ endif()
 
 # VI-grade addition to install Python runtime
 file(MAKE_DIRECTORY ${CURRENT_PACKAGES_DIR}/share/${PORT}/python)
-file(RENAME ${SOURCE_PATH}/lib/py/build/lib/thrift ${CURRENT_PACKAGES_DIR}/share/${PORT}/python/thrift)
+file(RENAME ${SOURCE_PATH}/lib/py/src ${CURRENT_PACKAGES_DIR}/share/${PORT}/python/thrift)
 
 file(INSTALL ${SOURCE_PATH}/LICENSE DESTINATION ${CURRENT_PACKAGES_DIR}/share/${PORT} RENAME copyright)
