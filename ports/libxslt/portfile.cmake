@@ -78,6 +78,9 @@ if (VCPKG_TARGET_IS_WINDOWS)
         file(RENAME ${CURRENT_PACKAGES_DIR}/debug/lib/libexslt_a${VCPKG_TARGET_STATIC_LIBRARY_SUFFIX} ${CURRENT_PACKAGES_DIR}/debug/lib/libexslt${VCPKG_TARGET_STATIC_LIBRARY_SUFFIX})
     endif()
 else()
+    vcpkg_find_acquire_program(PYTHON2)
+    get_filename_component(PYTHON2_DIR ${PYTHON2} DIRECTORY)
+
     find_library(LibXml2_DEBUG_LIBRARIES libxml2 PATHS ${CURRENT_INSTALLED_DIR}/debug/lib REQUIRED)
     find_library(LibXml2_RELEASE_LIBRARIES libxml2 PATHS ${CURRENT_INSTALLED_DIR}/lib REQUIRED)
     
@@ -94,16 +97,16 @@ else()
             --with-crypto
             --with-plugins
             --with-libxml-include-prefix=${CURRENT_INSTALLED_DIR}/include
-            --with-python=no
+            --with-python=${PYTHON2_DIR}
         OPTIONS_DEBUG
             --with-mem-debug
             --with-debug
             --with-debugger
-            --with-libxml-libs-prefix="${CURRENT_INSTALLED_DIR}/debug/lib -lxml2 -lz -llzmad ${LIBICONV}"
+            --with-libxml-libs-prefix="${CURRENT_INSTALLED_DIR}/debug/lib -lxml2 -lz -llzmad ${LIBICONV} -ldl"
             --with-html-dir=${CURRENT_INSTALLED_DIR}/debug/tools
             --with-html-subdir=${CURRENT_INSTALLED_DIR}/debug/tools
         OPTIONS_RELEASE
-            --with-libxml-libs-prefix="${CURRENT_INSTALLED_DIR}/lib -lxml2 -lz -llzma ${LIBICONV}"
+            --with-libxml-libs-prefix="${CURRENT_INSTALLED_DIR}/lib -lxml2 -lz -llzma ${LIBICONV} -ldl"
             --with-html-dir=${CURRENT_INSTALLED_DIR}/tools
             --with-html-subdir=${CURRENT_INSTALLED_DIR}/tools
     ) 
@@ -111,13 +114,7 @@ else()
     vcpkg_install_make()
     vcpkg_fixup_pkgconfig()
     
-    if (VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
-        file(COPY ${CURRENT_PACKAGES_DIR}/lib/libxslt.so ${CURRENT_PACKAGES_DIR}/bin/)
-    else()
-        file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/bin ${CURRENT_PACKAGES_DIR}/debug/bin)
-        file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/lib/libxslt-plugins ${CURRENT_PACKAGES_DIR}/debug/lib/libxslt-plugins)
-    endif()
-    file(REMOVE ${CURRENT_PACKAGES_DIR}/lib/libxslt.so)
+    file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/lib/libxslt-plugins ${CURRENT_PACKAGES_DIR}/debug/lib/libxslt-plugins)
 endif()
 #
 # Cleanup
