@@ -39,6 +39,11 @@ endif()
 
 vcpkg_install_cmake()
 
+if(VCPKG_TARGET_IS_LINUX)
+    file(RENAME ${CURRENT_PACKAGES_DIR}/lib64 ${CURRENT_PACKAGES_DIR}/lib)
+    file(RENAME ${CURRENT_PACKAGES_DIR}/debug/lib64 ${CURRENT_PACKAGES_DIR}/debug/lib)
+endif()
+
 #Debug
 file(REMOVE_RECURSE ${CURRENT_PACKAGES_DIR}/debug/include)
 
